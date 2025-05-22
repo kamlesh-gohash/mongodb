@@ -26,7 +26,7 @@ jobs:
     - name: Build, tag and push image to ECR
       run: |
         IMAGE_TAG=latest
-        IMAGE_URI=941824419453.dkr.ecr.ap-south-1.amazonaws.com/demo-app:$IMAGE_TAG
+        image: 941824419453.dkr.ecr.ap-south-1.amazonaws.com/demo-app:latest
         docker build -t $IMAGE_URI .
         docker push $IMAGE_URI
 
