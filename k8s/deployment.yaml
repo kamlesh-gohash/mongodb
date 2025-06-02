@@ -1,22 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: eks
-  labels:
-    app: eks
+  name: demo-app
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: eks
+      app: demo-app
   template:
     metadata:
       labels:
-        app: eks
+        app: demo-app
     spec:
       containers:
-        - name: eks
+        - name: demo-app
           image: 941824419453.dkr.ecr.us-east-1.amazonaws.com/eks:latest
-          imagePullPolicy: Always
           ports:
             - containerPort: 8080
+          resources:
+            requests:
+              cpu: "100m"
+            limits:
+              cpu: "500m"
