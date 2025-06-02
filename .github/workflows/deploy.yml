@@ -20,6 +20,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
+      - name: Verify AWS CLI version
+        run: aws --version
+
       - name: Login to Amazon ECR
         run: |
           aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 941824419453.dkr.ecr.ap-south-1.amazonaws.com
@@ -31,12 +34,26 @@ jobs:
           docker build -t $IMAGE_URI .
           docker push $IMAGE_URI
 
+      - name: Verify Docker images
+        run: docker images
+
       - name: Update kubeconfig for EKS cluster
         run: aws eks update-kubeconfig --name demo-cluster --region ap-south-1
 
-      - name: Update image URI in Kubernetes deployment manifest
+      - name: Verify kubectl version
+        run: kubectl version --client
+
+      - name: Replace image URI in Kubernetes deployment manifest
         run: |
           sed -i "s|<ECR_URI>|941824419453.dkr.ecr.ap-south-1.amazonaws.com/demo-app:${{ github.sha }}|g" k8s/deployment.yaml
 
+      - name: Show deployment.yaml contents (for debug)
+        run: cat k8s/deployment.yaml
+
       - name: Deploy to EKS
-        run: kubectl apply -f k8s/
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+
+      - name: Check deployment rollout status
+        run: kubectl rollout status deployment/demo-app
