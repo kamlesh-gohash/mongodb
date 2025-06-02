@@ -5,24 +5,13 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Correct environment variable defaults
-const mongohost = process.env.MONGO_HOST || 'localhost';
+const mongohost = process.env.MONGO_HOST || 'localhoost';
 const mongoport = process.env.MONGO_PORT || '27017';
 
-// Build MongoDB URI correctly
-const mongoURI = `mongodb://${mongohost}:${mongoport}/yourDatabaseName`;
-
-console.log(`Connecting to MongoDB at ${mongoURI}`);
-
 // Connect to MongoDB
-mongoose.connect(mongoURI, {
+mongoose.connect('mongodb://${mongohost}:&{mongoport}/yourDatabaseName', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-}).then(() => {
-    console.log('Connected to MongoDB');
-}).catch(err => {
-    console.error('Failed to connect to MongoDB:', err.message);
-    process.exit(1); // Stop app if DB connection fails
 });
 
 // Create a Mongoose model
@@ -60,8 +49,9 @@ app.get('/emails', async (req, res) => {
 });
 
 app.get('/exit', (req, res) => {
+    // Perform actions to stop the server or any other desired actions
     res.send('Server stopped');
-    process.exit(0); // Not recommended for production
+    process.exit(0); // This stops the server (not recommended in production)
 });
 
 // Start server
