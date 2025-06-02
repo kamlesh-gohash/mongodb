@@ -5,13 +5,20 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-const mongohost = process.env.MONGO_HOST || 'localhoost';
+const mongohost = process.env.MONGO_HOST || 'localhost'; // fixed typo
 const mongoport = process.env.MONGO_PORT || '27017';
 
+// ✅ Correct MongoDB connection string using template literals
+const mongoURL = `mongodb://${mongohost}:${mongoport}/yourDatabaseName`;
+
 // Connect to MongoDB
-mongoose.connect('mongodb://${mongohost}:&{mongoport}/yourDatabaseName', {
+mongoose.connect(mongoURL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+}).then(() => {
+    console.log('Connected to MongoDB');
+}).catch((err) => {
+    console.error('MongoDB connection error:', err);
 });
 
 // Create a Mongoose model
@@ -49,9 +56,8 @@ app.get('/emails', async (req, res) => {
 });
 
 app.get('/exit', (req, res) => {
-    // Perform actions to stop the server or any other desired actions
     res.send('Server stopped');
-    process.exit(0); // This stops the server (not recommended in production)
+    process.exit(0); // ⚠️ Not recommended for production
 });
 
 // Start server
